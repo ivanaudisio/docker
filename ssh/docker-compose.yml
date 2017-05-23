@@ -1,0 +1,11 @@
+version: '2'
+services:
+  master_server:
+    build: server_master
+    hostname: server_master
+    container_name: server_master
+
+  server:
+    build: server
+    hostname: server
+    container_name: server
