@@ -1,0 +1,31 @@
+---
+- hosts: all
+
+  vars:
+    foo: 'var'
+
+  tasks:
+
+    # Using Debug to show content of a variable or show message on console
+    - name: Use debug to print variable foo
+      debug:
+        msg: "Variable foo contains the value: {{ foo }}"
+
+    # Registering a variable and showing it's content
+    - name: Register output from shell into variable result
+      shell: /usr/bin/uptime
+      register: result
+
+    - debug:
+        var: result
+
+#    - name: Display all variables/facts known for a host
+#      debug:
+#        var: hostvars[inventory_hostname]
+
+    # Installing curl through apt-get install
+    - name: Installing curl
+      apt:
+        name: curl
+        state: present
+        update_cache: yes
