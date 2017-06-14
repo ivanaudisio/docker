@@ -30,8 +30,8 @@ String url = args[1] //"http://cje.example.com:8282"
 */
 
 //coment this if you want to use it from command line
-def name = "master01"
-String url = "http://jenkins:8080"
+def name = "Master_container_hostname"
+String url = "http://hostname:8080"
 
 int id = Jenkins.instance.getAllItems(ClientMaster.class).size() + 1
 String grantId = id + '-' + name //"jenkins-$id"

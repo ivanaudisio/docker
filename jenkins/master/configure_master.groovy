@@ -7,5 +7,5 @@ Jenkins.instance.setNumExecutors(0)
 
 Jenkins.instance.setSlaveAgentPort(50000)
 
-configuration = JenkinsLocationConfiguration.get().setUrl('http://jenkins:8080')
+configuration = JenkinsLocationConfiguration.get().setUrl('http://hostname:8080')
 configuration.save()

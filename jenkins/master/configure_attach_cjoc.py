@@ -2,6 +2,9 @@ import re
 import time
 from mechanize import Browser
 import os # needed to execute shell commands - ex. os.system('ls')
+import socket
+
+hostname = socket.gethostname()
 
 def activate_cb_instance(url):
     max_retries=1000 # maximum number of times to retry
@@ -24,9 +27,9 @@ def activate_cb_instance(url):
             exit()
 
     for form in br.forms():
-            if count == 2:
-                    formname = form.attrs['name']
-            count = count + 1
+        if count == 2:
+            formname = form.attrs['name']
+        count = count + 1
     br.select_form(name=formname)
 
     response = br.response()
@@ -40,12 +43,11 @@ def activate_cb_instance(url):
     response = br.submit() # submit form with new parameters
 
 # Activate Jenkins operation center
-url="http://cjoc:8080/registration#btn-com_cloudbees_opscenter_server_license_OperationsCenterEvaluationRegistrar" # URL to open
+url="http://localhost:8080/registration#btn-com_cloudbees_jenkins_plugins_license_nectar_EvaluationRegistrar" # URL to open
 activate_cb_instance(url)
-# Activate Jenkins Enterprise
-url="http://jenkins:8080/registration#btn-com_cloudbees_jenkins_plugins_license_nectar_EvaluationRegistrar" # URL to open
-activate_cb_instance(url)
+
+os.system("sed -i 's/hostname/"+hostname+"/g' /home/configure_attach_cjoc.groovy")
 # Get CLI from operation center
 os.system('wget http://cjoc:8080/jnlpJars/jenkins-cli.jar')
 # Attach master to operation center
-os.system('java -jar jenkins-cli.jar -s http://cjoc:8080/ groovy /home/attach.master.groovy')
+os.system('java -jar jenkins-cli.jar -s http://cjoc:8080/ groovy /home/configure_attach_cjoc.groovy')
