@@ -4,7 +4,7 @@
 
 #### Removing all images under the \<none\> tag
 
-docker rmi $(docker images | awk '$2=="<none>"' | awk '{print $3}')
+docker rmi $(docker images | awk '$2=="\<none\>"' | awk '{print $3}')
 
 #### Removing all images that contain one specific string
 
