@@ -16,7 +16,7 @@ RUN echo 'root:password' | chpasswd && \
 # Create new user & create .ssh folder
 RUN export NEW_USER=demo1 && \
     adduser --disabled-password --gecos "" $NEW_USER && \
-    echo "$NEW_USER:password" | chpasswd && \
+$NEW_USER:password" | chpasswd && \
     mkdir /home/$NEW_USER/.ssh && \
     chmod 755 /home/$NEW_USER/.ssh/ && \
     chown $NEW_USER:$NEW_USER /home/$NEW_USER/.ssh && \
@@ -27,7 +27,7 @@ RUN export NEW_USER=demo1 && \
 # Create new user
 RUN export NEW_USER=demo2 && \
     adduser --disabled-password --gecos "" $NEW_USER && \
-    echo "$NEW_USER:password" | chpasswd
+$NEW_USER:password" | chpasswd
 
 RUN rm -f /tmp/id_rsa.pub   # Remove uploaded public key from /tmp
 
