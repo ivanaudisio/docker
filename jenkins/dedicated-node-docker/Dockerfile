@@ -1,18 +1,31 @@
 ############################################################
 # Dockerfile
 # Jenkins Node with Docker installed inside
+#
+# Update the index of available packages
+# Install JDK to connect node to Jenkins through JNLP
+# Install Supervisord to run multiple services:
+#   - Docker
+#   - Python script to create node and attach it
+# Install pip that is needed to install mechanize
+# Install curl to execute REST API on master
+# Install wget needed to get slave.jar file
+# Install git to be able to retrieve repositories
+# Install mechanize to validate that Jenkins is running
+# Install docker compose
 ############################################################
 
 FROM docker:dind
 
-RUN apk add --update \            # Update the index of available packages
-    openjdk7-jre \                # Install JDK to connect node to Jenkins through JNLP
-    supervisor \                  # Install Supervisord to run multiple services (docker and script to create/attach node)
-    py-pip \                      # Install pip that is needed to install mechanize
-    curl \                        # Install curl to execute REST API on master
-    wget \                        # Install wget needed to get slave.jar file
-    git \                         # Install git to be able to retrieve repositories upon testing
-    && pip install mechanize      # Install mechanize to automate and validate that Jenkins is running
+RUN apk add --update \
+    openjdk7-jre \
+    supervisor \
+    py-pip \
+    curl \
+    wget \
+    git \
+    && pip install mechanize \
+    && pip install docker-compose
 
 COPY supervisord.conf /etc/
 COPY node-create.groovy /home/
