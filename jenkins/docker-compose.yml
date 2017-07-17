@@ -1,26 +1,35 @@
 version: '3'
+
 services:
-  cjoc:
-    container_name: cjoc
-    build: operation_center
-    hostname: cjoc
-    ports:
-     - "8888:8080"
-    networks:
-     - cloudbees_network
 
-  master:
-    build: master
+  jenkins:
+    container_name: jenkins
+    build: jenkins
+    hostname: jenkins
+    environment:
+     - JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
     ports:
-     - "8080"
+     - "8080:8080"
     networks:
-     - cloudbees_network
+     - docker_development
 
-  shared_node:
-    build: node_shared
+  dedicated-node-docker:
+    build: dedicated-node-docker
+    container_name: dedicated-node-docker
+    hostname: dedicated-node-docker
+    privileged: true
+    environment:
+     - JENKINS_URL=http://jenkins:8080
+     - NODE_NAME="Dedicated-Node-Docker"
+     - NODE_DESCRIPTION="This node can execute docker commands. Map port 9000 for containers ran in this node to see them localy"
+     - NODE_EXECUTORS=2
+     - NODE_DIRECTORY=/node_workspace
+     - NODE_LABELS="docker linux mechanize java python git"
+    ports:
+     - "9000:9000"
     networks:
-     - cloudbees_network
+     - docker_development
 
 networks:
-  cloudbees_network:
+  docker_development:
     driver: bridge
