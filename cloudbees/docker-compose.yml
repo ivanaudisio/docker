@@ -1,0 +1,26 @@
+version: '3'
+services:
+  cjoc:
+    container_name: cjoc
+    build: operation_center
+    hostname: cjoc
+    ports:
+     - "8888:8080"
+    networks:
+     - cloudbees_network
+
+  master:
+    build: master
+    ports:
+     - "8080"
+    networks:
+     - cloudbees_network
+
+  shared_node:
+    build: node_shared
+    networks:
+     - cloudbees_network
+
+networks:
+  cloudbees_network:
+    driver: bridge
