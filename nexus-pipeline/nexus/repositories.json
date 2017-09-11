@@ -1,0 +1,5 @@
+{
+  "name": "createRepositories",
+  "type": "groovy",
+  "content": "repository.createRawHosted('alpha'); repository.createRawHosted('beta')"
+}

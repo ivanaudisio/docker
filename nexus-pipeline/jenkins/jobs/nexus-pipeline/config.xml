@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.11.1">
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.36.1">
+    <script>pipeline {
+    environment {
+        artifact = &quot;example.txt&quot;
+        repository = &quot;alpha&quot;
+        artifactId = &quot;myApp&quot;
+        version = &quot;${BUILD_NUMBER}&quot;
+        nexusProtocol = &quot;http&quot;
+        nexusUrl = &quot;nexus:8081&quot;
+        newRepository = &quot;beta&quot;
+    }
+
+    agent any
+    stages {
+        stage(&apos;Build artifact&apos;) {
+            steps {
+                sh &quot;touch ${artifact}&quot;
+            }
+        }
+        stage(&apos;Tests&apos;) {
+            steps {
+                echo &apos;testing the artifact&apos;
+            }
+        }
+        stage(&apos;Upload to Nexus (alpha)&apos;) {
+            steps {
+                sh &quot;curl -v -u admin:admin123 --upload-file ${artifact} ${nexusProtocol}://${nexusUrl}/repository/${repository}/${artifactId}/${version}/${artifact}&quot;
+                // The following script requires the Nexus Artifact Uploader plugin
+                // nexusArtifactUploader credentialsId: &apos;nexus-credentials&apos;,
+                //   groupId: &apos;&apos;,
+                //   nexusUrl: &quot;${nexusUrl}&quot;,
+                //   nexusVersion: &apos;nexus3&apos;,
+                //   protocol: &quot;${nexusProtocol}&quot;,
+                //   repository: &quot;${repository}&quot;,
+                //   version: &quot;${version}&quot;,
+                //   artifacts: [[artifactId: &quot;${artifactId}&quot;, classifier: &apos;&apos;, file: &quot;${artifact}&quot;, type: &apos;&apos;]]
+            }
+        }
+        stage(&apos;QA&apos;) {
+            steps {
+                input message: &apos;Passed QA?&apos;, ok: &apos;Passed Tests&apos;
+            }
+        }
+        stage(&apos;Promote artifact to Beta&apos;) {
+            steps {
+                dir(&apos;promote&apos;) {
+                    echo &quot;Downloading pre-alpha artifact&quot;
+                    sh &quot;curl -X GET -u admin:admin123 ${nexusProtocol}://${nexusUrl}/repository/${repository}/${artifactId}/${version}/${artifact} -O&quot;
+                    echo &quot;Uploading artifact to beta&quot;
+                    sh &quot;curl -v -u admin:admin123 --upload-file ${artifact} ${nexusProtocol}://${nexusUrl}/repository/${newRepository}/${artifactId}/${version}/${artifact}&quot;
+                    echo &quot;Removing artifact from Alpha&quot;
+                    sh &quot;curl -v -u admin:admin123 -X DELETE ${artifact} ${nexusProtocol}://${nexusUrl}/repository/${repository}/${artifactId}/${version}/${artifact}&quot;
+                }
+            }
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
